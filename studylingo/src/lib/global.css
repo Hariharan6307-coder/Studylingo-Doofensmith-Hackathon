@@ -1,0 +1,42 @@
+:root {
+  --background-color: #6B5CE0;
+  --card-color: #564B8F;
+
+  --white-text-color: #F7ECF4;
+  --black-text-color: #111016;
+
+  --primary-button-color: #F5B17F;
+  --primary-button-dark-color: #CD946B;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+* {
+  font-family: "Nunito", sans-serif;
+  color: var(--white-text-color);
+}
+
+body {
+  background-color: var(--background-color);
+}
+
+.primary-button {
+  background-color: var(--primary-button-color);
+  border: none;
+  border-radius: 99999px;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  font-weight: 800;
+  box-shadow: 0 8px 0 var(--primary-button-dark-color);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.primary-button:active {
+  transform: translateY(6px);
+  box-shadow: none;
+}
