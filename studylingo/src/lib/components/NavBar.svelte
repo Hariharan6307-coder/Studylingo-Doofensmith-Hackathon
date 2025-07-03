@@ -28,7 +28,7 @@
 <style>
   nav {
     background-color: var(--card-color);
-    height: 5.625rem;
+    height: 5.625rem; /* When changing this, also change in +layout.svelte page-content height*/
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -71,8 +71,8 @@
   @media screen and (min-width: 1000px){
     nav {
       flex-direction: column;
-      width: 7rem;
-      height: 100vh;
+      width: 7rem; 
+      height: 100%;
       top: 0;
       bottom: unset;
       justify-content: flex-start;
@@ -102,7 +102,7 @@
     nav {
       flex-direction: column;
       width: 20rem;
-      height: 100vh;
+      height: 100%;
       top: 0;
       bottom: unset;
       justify-content: flex-start;
