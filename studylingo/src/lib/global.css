@@ -10,6 +10,9 @@
   --primary-button-dark-color: #CD946B;
 
   --emerald-green-color: rgb(165, 255, 0, 0.55);
+  --gold-color: #EFBF04;
+  --silver-color: #C4C4C4;
+  --bronze-color: #CE8946;
 }
 
 html, body {
@@ -49,8 +52,9 @@ body {
   border: none;
   border-radius: 99999px;
   background-color: rgb(0, 0, 0, 0);
-  font-weight: 800;
-  padding: 0.25rem 0.5rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+  padding: 0.25rem 1rem;
   cursor: pointer;
 }
 

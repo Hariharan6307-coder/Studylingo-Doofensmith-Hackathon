@@ -1,11 +1,13 @@
 <script>
+  import { render } from 'svelte/server';
+  let username = "John Pork"
   let streakData = {
     streak: 27,
     streakCase: 1 // 0 - Streak is off, 1 - Streak is on, 2 - Streak is broken
   }
   let progress = 42;
   let rank = {
-    today: 3,
+    today: 2,
     weekly: 19
   };
   let isToday = $state(true);
@@ -17,30 +19,55 @@
 
 <main>
   <div class="stats-card-container">
-    <button class="rank-card" onclick={() => {
-      isToday = !isToday;
-    }}> 
-      <div class="rank-details">
-        <div class="rank">{selectedRank}<sup>
-          {#if selectedRank == 1}
-            st
-          {:else if selectedRank == 2}
-            nd
-          {:else if selectedRank == 3}
-            rd
-          {:else}
-            th
-          {/if}
-        </sup></div>
-        <div style="font-weight: 500; font-size: 1rem;">
-          {#if isToday}
-            Today
-          {:else}
-            Weekly
-          {/if}
+    {#snippet rankIconRenderer(rank)}
+      {#if selectedRank == 1}
+        <img src="/images/rank-icons/gold-rank-icon.png" alt="">
+        <div class="rank-details" style="color: var(--black-text-color);">
+          {selectedRank}
+        </div>
+      {:else if selectedRank == 2}
+        <img src="/images/rank-icons/silver-rank-icon.png" alt="">
+        <div class="rank-details" style="color: var(--black-text-color);">
+          {selectedRank}
+        </div>
+      {:else if selectedRank == 3}
+        <img src="/images/rank-icons/bronze-rank-icon.png" alt="">
+        <div class="rank-details" style="color: var(--black-text-color);">
+          {selectedRank}
+        </div>
+      {:else}
+        <img src="/images/rank-icons/regular-rank-icon.png" alt="">
+        <div class="rank-details" style="color: var(--black-text-color);">
+          {selectedRank}
+        </div>
+      {/if}
+    {/snippet}
+    <div class="rank-container">
+      <div class="mobile-view">
+        <button class="rank-card" onclick={() => {
+          //isToday = !isToday;
+        }}>
+          {@render rankIconRenderer(selectedRank)}
+        </button>
+      </div>
+      <div class="desktop-view">
+        <div class="button-container">
+          <button class="selectable-button" class:selected={isToday} onclick={() => {
+            isToday = true;
+          }}>Today</button>
+          <button class="selectable-button" class:selected={!isToday} onclick={() => {
+            isToday = false;
+          }}>Weekly</button>
+        </div>
+        <div class="rank-contents">
+          <div class="rank-icon">
+            {@render rankIconRenderer(selectedRank)}
+          </div>
+          <div class="user-name">{username}</div>
         </div>
       </div>
-    </button>
+    </div>
+    
     <div class="streak-card">
       {#if streakData.streakCase == 1}
         <img src="/images/stats-icons/streak-icon.png" alt="">
@@ -49,9 +76,13 @@
       {:else if streakData.streakCase == 2}
         <img src="/images/stats-icons/streak-break-icon.png" alt="">
       {/if}
-      <div class="streak-card-details">
+      <div class="streak-card-details mobile-view">
         <div class="streak-number">{streakData.streak}</div>
         <div class="streak-text">Days Streak</div>
+      </div>
+      <div class="streak-card-data desktop-view">
+        <div class="streak-number-title">{streakData.streak} Days Streak</div>
+        <div class="streak-message">This will be good message motivating the user to keep the streak going</div>
       </div>
     </div>
   </div>
@@ -64,19 +95,19 @@
       <div class="progress-fill" style="width: {progress}%">
       </div>
     </div>
+    <button class="primary-button start-button">START</button>
   </div>
-  <button class="primary-button start-button">START</button>
 </main>
 
 
 <style>
   main {
     display: flex;
-    height: calc(100% - 11rem);
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
     width: 100%;
+    height: 100%;
   }
 
   .course-container {
@@ -84,6 +115,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 5%;
   }
 
   .learning-path-link {
@@ -92,7 +124,6 @@
     align-items: center;
     width: 70%;
     max-width: 21.875rem;
-    margin-top: 1rem;
   }
 
   .learning-path-link img {
@@ -131,31 +162,40 @@
     height: 7rem;
   }
 
-  .rank-card {
-    background-color: var(--light-background-color);
+  .rank-container {
     height: 100%;
-    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .desktop-view {
+    display: none;
+  }
+
+  .rank-card {
+    background-color: rgb(0, 0, 0, 0);
+    height: 100%;
     border: none;
-    border-radius: 50%;
-    padding: 0.5rem;
     margin-right: 2rem;
+    position: relative;
   }
 
   .rank-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .rank {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-size: 2.5rem;
-    font-weight: 700;
-    padding-left: 0.5rem;
+    padding-bottom: 1rem;
+    font-weight: 800;
   }
 
-  .rank sup {
-    font-size: 1rem;
+  .mobile-view {
+    height: 100%;
+  }
+
+  .rank-card img {
+    height: 100%;
   }
 
   .streak-card {
@@ -164,7 +204,7 @@
     width: 70%;
     max-width: 15.6rem;
     border-radius: 1rem;
-
+    padding-right: 1rem;
     display: flex;
   }
 
@@ -183,6 +223,126 @@
     font-weight: 700;
   }
 
+  @media screen and (min-width: 1000px) {
+    main {
+      flex-direction: row;
+      width: 100%;
+    }
+
+    .stats-card-container {
+      height: 50rem;
+      order: 2;
+      flex-direction: column;
+      flex: 1;
+      margin-right: 2rem;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .mobile-view {
+      display: none;
+    }
+
+    .rank-container {
+      height: 15rem;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+
+    .rank-container .desktop-view {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background-color: var(--card-color);
+      border-radius: 2rem;
+    }
+
+    .button-container {
+      height: 30%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    .rank-contents {
+      height: 70%;
+      display: flex;
+      align-items: center;
+    }
+
+    .rank-icon {
+      height: 100%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0rem 2rem;
+    }
+
+    .rank-icon .rank-details{
+      padding-bottom: 1.5rem;
+    }
+
+    .rank-icon img {
+      height: 70%;
+    }
+
+    .rank-contents .user-name {
+      font-size: 2rem;
+      font-weight: 700;
+      padding-bottom: 1rem;
+    }
+
+    .course-container {
+      order: 1;
+      flex: 2;
+      margin-top: 0;
+    }
+
+    .learning-path-link {
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .streak-card {
+      height: 14rem;
+      width: 100%;
+      max-width: unset;
+      padding-right: unset;
+      border-radius: 2rem;
+    }
+
+    .streak-card img {
+      height: 50%;
+    }
+
+    .streak-card-data.desktop-view {
+      padding-top: 1rem;
+      padding-left: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .streak-number-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .streak-message {
+      font-size: 1.5rem;
+      font-weight: 500;
+      padding: 0rem 1rem 0rem 0rem;
+    }
+  }
+
+  @media screen and (min-width: 1400px) {
+    main {
+      width: 100%;
+    }
+  }
 </style>
 
 
