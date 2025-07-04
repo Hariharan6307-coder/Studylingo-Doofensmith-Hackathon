@@ -16,11 +16,16 @@
 
 <style>
   .top-bar-container {
-    height: 10%;
+    height: 8rem;
     display: flex;
     justify-content: end;
     align-items: center;
     padding: 1rem;
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
   }
 
   .xp-container {

@@ -1,4 +1,5 @@
 :root {
+  --dark-background-color: #453C75;
   --background-color: #6B5CE0;
   --card-color: #564B8F;
   --light-background-color: #A096E0;
@@ -60,4 +61,8 @@ body {
 
 .selectable-button.selected {
   background-color: var(--light-background-color);
+}
+
+button {
+  cursor: pointer;
 }

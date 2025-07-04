@@ -1,5 +1,6 @@
 <script>
   import { render } from 'svelte/server';
+  let course = "physics" // physics / maths
   let username = "John Pork"
   let streakData = {
     streak: 27,
@@ -87,15 +88,17 @@
     </div>
   </div>
   <div class="course-container">
-    <a href="" class="learning-path-link">
-      <img src="/images/course-icons/physics-icon.png" alt="">
+    <a href="/learning-path?course={course}" class="learning-path-link">
+      <img src="/images/course-icons/{course}-icon.png" alt="">
     </a>
-    <div class="physics-text">PHYSICS</div>
+    <div class="course-text">{course}</div>
     <div class="progress-bar">
       <div class="progress-fill" style="width: {progress}%">
       </div>
     </div>
-    <button class="primary-button start-button">START</button>
+    <a href="/learning-path?course={course}">
+      <button class="primary-button start-button">START</button>
+    </a>
   </div>
 </main>
 
@@ -105,7 +108,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
     width: 100%;
     height: 100%;
   }
@@ -115,7 +117,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 5%;
+    justify-content: center;
+    flex: 1;
   }
 
   .learning-path-link {
@@ -145,9 +148,10 @@
     border-radius: 999999px;
   }
 
-  .physics-text {
+  .course-text {
     font-size: 2.7rem;
     font-weight: 700;
+    text-transform: uppercase;
   }
 
   .start-button {
@@ -226,15 +230,14 @@
   @media screen and (min-width: 1000px) {
     main {
       flex-direction: row;
+      align-items: flex-start;
       width: 100%;
     }
 
     .stats-card-container {
       height: 50rem;
       order: 2;
-      flex-direction: column;
       flex: 1;
-      margin-right: 2rem;
 
       display: flex;
       flex-direction: column;
@@ -319,7 +322,7 @@
     }
 
     .streak-card-data.desktop-view {
-      padding-top: 1rem;
+      padding-top: 2.5rem;
       padding-left: 1rem;
       display: flex;
       flex-direction: column;
