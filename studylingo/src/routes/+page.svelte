@@ -1,7 +1,11 @@
+<script>
+  import { goto } from "$app/navigation";
+</script>
+
 <div class="content-wrapper">
-  <a href="/home">
-    <button class="primary-button login-button">LOGIN</button>
-  </a>
+  <button class="primary-button login-button" onclick={() => {
+    goto("/login");
+  }}>LOGIN</button>
 </div>
 
 
