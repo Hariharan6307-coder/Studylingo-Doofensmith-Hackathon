@@ -38,7 +38,8 @@ app.post('/register', async(req, res) => {
       gems: 0,
       following: "[]",
       followers: "[]",
-      badges: "[]"
+      badges: "[]",
+      current_topic_id: 101
     }]);
 
       if (insertError) {
@@ -60,7 +61,57 @@ app.post('/login', async(req, res) => {
   }
 
   return res.json({user: data.user, session: data.session});
-})
+});
+
+
+async function getUserFromToken(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) return res.status(401).json({error: "No Token Provided"});
+
+  const {data: {user}, error} = await supabase.auth.getUser(token);
+
+  if (error || !user) return res.status(401).json({error: "Invalid Token"});
+
+  req.user = user;
+  next();
+}
+
+app.get("/fetch-data", getUserFromToken, async (req, res) => {
+  const userId = req.user.id;
+
+  const {data, error} = await supabase
+  .from("user_stats").select("*").eq("user_id", userId).single();
+
+  if (error && error.code !== "PGRST116") {
+    return res.status(500).json({error: error.message});
+  }
+
+  res.json({
+    user_name: data.user_name,
+    streak: data.streak,
+    xp_today: data.xp_today,
+    gems: data.gems,
+    current_topic_id: data.current_topic_id
+  });
+});
+
+app.get("/fetch-topics", async (req, res) => {
+  const chapterName = req.query.chapterName;
+
+  if (!chapterName) {
+    return res.status(400).json({error: "Missing Chapter"});
+  }
+
+  const {data, error} = await supabase
+  .from(`${chapterName}`).select("*");
+
+  if (error) {
+    return res.status(500).json({error: error.message});
+  }
+  
+  res.json(data);
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

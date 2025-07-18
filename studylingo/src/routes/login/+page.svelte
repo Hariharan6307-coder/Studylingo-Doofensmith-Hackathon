@@ -28,6 +28,7 @@
       return;
     }
 
+    localStorage.setItem("access_token", data.session.access_token);
     goto("/home");
   }
 
@@ -81,5 +82,9 @@
     padding: 1rem;
     margin-bottom: 2rem;
     color: var(--black-text-color);
+  }
+
+  .errorMsg {
+    color: red;
   }
 </style>

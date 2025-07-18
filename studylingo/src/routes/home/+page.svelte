@@ -1,10 +1,14 @@
 <script>
+  import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
   import { render } from 'svelte/server';
+  import { fetchData } from "../../functions/functions";
+
   let course = "physics" // physics / maths
-  let username = "John Pork"
+  let username = $state("")
+  let streak = $state()
   let streakData = {
-    streak: 27,
-    streakCase: 1 // 0 - Streak is off, 1 - Streak is on, 2 - Streak is broken
+    streakCase: 1 // 0 - Streak is off, 1 - Streak is on, -1 - Streak is broken
   }
   let progress = 42;
   let rank = {
@@ -16,6 +20,15 @@
     if (isToday) return rank.today;
     else return rank.weekly;
   });
+
+  onMount(() => {
+    fetchData().then((data) => {
+      username = data.user_name;
+      streak = data.streak;
+    })
+  });
+
+
 </script>
 
 <main>
@@ -74,15 +87,15 @@
         <img src="/images/stats-icons/streak-icon.png" alt="">
       {:else if streakData.streakCase == 0}
         <img src="/images/stats-icons/streak-off-icon.png" alt="">
-      {:else if streakData.streakCase == 2}
+      {:else if streakData.streakCase == -1}
         <img src="/images/stats-icons/streak-break-icon.png" alt="">
       {/if}
       <div class="streak-card-details mobile-view">
-        <div class="streak-number">{streakData.streak}</div>
+        <div class="streak-number">{streak}</div>
         <div class="streak-text">Days Streak</div>
       </div>
       <div class="streak-card-data desktop-view">
-        <div class="streak-number-title">{streakData.streak} Days Streak</div>
+        <div class="streak-number-title">{streak} Days Streak</div>
         <div class="streak-message">This will be good message motivating the user to keep the streak going</div>
       </div>
     </div>

@@ -1,6 +1,18 @@
 <script>
-  let xp = 2300;
-  let gems = 30;
+    import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
+    import { fetchData } from "../../functions/functions";
+
+  let xp = $state();
+  let gems = $state();
+
+  onMount(() => {
+    fetchData().then((data) => {
+      xp = data.xp_today;
+      gems = data.gems;
+    })
+  });
+
 </script>
 
 <div class="top-bar-container">

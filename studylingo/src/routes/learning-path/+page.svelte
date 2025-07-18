@@ -1,15 +1,33 @@
 <script>
   import { page } from "$app/stores";
-  import { courseStructure } from "../../data/course-structure.js"
+  import { onMount } from "svelte";
+  import { fetchData } from "../../functions/functions";
 
   let courseName = $page.url.searchParams.get('course') || 'unknown';
-  let topicsObjList = courseStructure[courseName].chapter1.topics;
-  let topicsList = [];
-  let currentTopicId = 104;
+  let currentTopicId = $state(0);
 
-  Object.entries(topicsObjList).forEach(([topicNumber, topic]) => {
-    topicsList.push(topic)
-  })
+  let topicsObjList = $state([]);
+  
+  onMount(() => {
+    fetchData().then((data) => {
+      currentTopicId = data.current_topic_id;
+      // currentTopicId = 103; // comment the above line to test this
+    });
+    fetchTopics();
+  });
+
+  async function fetchTopics() {
+    const res = await fetch("http://localhost:3000/fetch-topics?chapterName=electric_currents");
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error);
+    }
+    else {
+      topicsObjList = data;
+    }
+  }
 </script>
 
 <div class="title-box">
@@ -21,9 +39,9 @@
 </div>
 <div class="scrollable-learning-path-container">
   <div class="scrollable-learning-path">
-    {#each topicsList as topic, index}
-      <div class="topic-item" class:odd-one={index % 2 != 0} class:finished={topic.isCompleted} class:current-one={topic.id == currentTopicId}>
-        <p>{topic.name}</p>
+    {#each topicsObjList as topicObj, index}
+      <div class="topic-item" class:odd-one={index % 2 != 0} class:current-one={topicObj.topic_id === currentTopicId} class:finished={topicObj.topic_id < currentTopicId}>
+        <p>{topicObj.topic_name}</p>
         <button>{index + 1}</button>
       </div>
     {/each}
@@ -102,10 +120,12 @@
 
   .finished button {
     background-color: var(--emerald-green-color);
+    box-shadow: 0 6px 0 var(--dark-emerald-green-color);
   }
 
   .current-one button {
     background-color: var(--primary-button-color);
+    box-shadow: 0 6px 0 var(--primary-button-dark-color);
   }
 
   .back-button-container {
