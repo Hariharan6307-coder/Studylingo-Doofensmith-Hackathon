@@ -2,6 +2,7 @@
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import { fetchData } from "../../functions/functions";
+  import { goto } from "$app/navigation";
 
   let courseName = $page.url.searchParams.get('course') || 'unknown';
   let currentTopicId = $state(0);
@@ -23,6 +24,7 @@
 
     if (!res.ok) {
       alert(data.error);
+      goto("/login");
     }
     else {
       topicsObjList = data;

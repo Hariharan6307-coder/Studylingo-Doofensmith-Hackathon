@@ -88,6 +88,7 @@ app.get("/fetch-data", getUserFromToken, async (req, res) => {
   }
 
   res.json({
+    user_id: data.user_id,
     user_name: data.user_name,
     streak: data.streak,
     xp_today: data.xp_today,
@@ -110,6 +111,19 @@ app.get("/fetch-topics", async (req, res) => {
     return res.status(500).json({error: error.message});
   }
   
+  res.json(data);
+});
+
+app.get("/get-rankings", async(req, res) => {
+  const category = req.query.category;
+
+  const {data, error} = await supabase
+  .from("user_stats").select(`user_id, user_name, ${category}`).order(`${category}`, {ascending: false});
+
+  if (error) {
+    return res.status(500).json({error: error.message});
+  }
+
   res.json(data);
 });
 
