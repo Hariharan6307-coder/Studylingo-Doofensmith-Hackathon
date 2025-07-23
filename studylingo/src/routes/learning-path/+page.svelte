@@ -44,7 +44,9 @@
     {#each topicsObjList as topicObj, index}
       <div class="topic-item" class:odd-one={index % 2 != 0} class:current-one={topicObj.topic_id === currentTopicId} class:finished={topicObj.topic_id < currentTopicId}>
         <p>{topicObj.topic_name}</p>
-        <button>{index + 1}</button>
+        <button onclick={() => {
+          goto(`/lessons?topicId=${topicObj.topic_id}`);
+        }}>{index + 1}</button>
       </div>
     {/each}
   </div>

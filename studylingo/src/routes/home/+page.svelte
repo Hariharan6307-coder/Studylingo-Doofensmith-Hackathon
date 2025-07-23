@@ -31,6 +31,7 @@
 
 </script>
 
+
 <main>
   <div class="stats-card-container">
     {#snippet rankIconRenderer(rank)}
