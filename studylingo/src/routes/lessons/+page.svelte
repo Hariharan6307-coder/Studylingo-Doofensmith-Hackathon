@@ -2,6 +2,7 @@
   import * as rive from "@rive-app/canvas";
   import { page } from "$app/stores";
   import { lessons } from "../../data/lessons_questions";
+  import { goto } from "$app/navigation";
 
   let topicId = $page.url.searchParams.get("topicId") || "unknown";
 
@@ -42,7 +43,9 @@
         currentIndex += 1;
       }
     }}>Next</button>
-    <button class="primary-button finish-button" class:remove={currentIndex !== lessonsObjList.length - 1}>Finish</button>
+    <button class="primary-button finish-button" class:remove={currentIndex !== lessonsObjList.length - 1} onclick={() => {
+      goto(`/questions?topicId=${topicId}`);
+    }}>Finish</button>
   </div>
 </main>
 

@@ -1,0 +1,150 @@
+<script>
+  import { questions } from "../../data/lessons_questions";
+  import { page } from "$app/stores";
+
+  let optionAButton, optionBButton, optionCButton, optionDButton;
+  const rightAnswerColor = "#8cd900";
+  const wrongAnswerColor = "#ff7d7d";
+  const defaultAnswerColor = "#564B8F";
+
+  let topicId = $page.url.searchParams.get("topicId") || "unknown";
+  const questionsObjList = questions[topicId];
+
+  let updatedQuestionsObjList = $state(questionsObjList);
+
+  let currentIndex = $state(0);
+  let questionObj = $derived(updatedQuestionsObjList[currentIndex]);
+
+  let isOptionClicked = $state(false);
+
+  function onOptionClick(button) {
+    if (!isOptionClicked) {
+      switch (button) {
+        case optionAButton:
+          if (questionObj.options.a === questionObj.answer) optionAButton.style.backgroundColor = rightAnswerColor;
+          else {
+            optionAButton.style.backgroundColor = wrongAnswerColor;
+            updatedQuestionsObjList.push(questionObj);
+          }
+          break;
+        case optionBButton:
+          if (questionObj.options.b === questionObj.answer) optionBButton.style.backgroundColor = rightAnswerColor;
+          else {
+            optionBButton.style.backgroundColor = wrongAnswerColor;
+            updatedQuestionsObjList.push(questionObj);
+          }
+          break;
+        case optionCButton:
+          if (questionObj.options.c === questionObj.answer) optionCButton.style.backgroundColor = rightAnswerColor;
+          else {
+            optionCButton.style.backgroundColor = wrongAnswerColor;
+            updatedQuestionsObjList.push(questionObj);
+          }
+          break;
+        case optionDButton:
+          if (questionObj.options.d === questionObj.answer) optionDButton.style.backgroundColor = rightAnswerColor;
+          else {
+            optionDButton.style.backgroundColor = wrongAnswerColor;
+            updatedQuestionsObjList.push(questionObj);
+          }
+          break;
+      }
+    }
+    isOptionClicked = true;
+  }
+
+</script>
+
+<main>
+  <div class="container">
+    <div class="question">{questionObj.question}</div>
+    <div class="options-container">
+      <button bind:this={optionAButton}
+      onclick={() => onOptionClick(optionAButton)}
+      >(A) {questionObj.options.a}</button>
+      <button bind:this={optionBButton}
+      onclick={() => onOptionClick(optionBButton)}
+      >(B) {questionObj.options.b}</button>
+      <button bind:this={optionCButton}
+      onclick={() => onOptionClick(optionCButton)}
+      >(C) {questionObj.options.c}</button>
+      <button bind:this={optionDButton}
+      onclick={() => onOptionClick(optionDButton)}
+      >(D) {questionObj.options.d}</button>
+    </div>
+  </div>
+  <div class="nav-button-container">
+    {#if isOptionClicked}
+      <button class="primary-button next-button" class:remove={currentIndex === updatedQuestionsObjList.length - 1} onclick={() => {
+        if (currentIndex < updatedQuestionsObjList.length - 1) {
+          currentIndex += 1;
+        }
+        isOptionClicked = false;
+        optionAButton.style.backgroundColor = defaultAnswerColor;
+        optionBButton.style.backgroundColor = defaultAnswerColor;
+        optionCButton.style.backgroundColor = defaultAnswerColor;
+        optionDButton.style.backgroundColor = defaultAnswerColor;
+      }}>Next</button>
+      <button class="primary-button finish-button" class:remove={currentIndex !== updatedQuestionsObjList.length - 1}>Finish</button>
+    {/if}
+  </div>
+</main>
+
+<style>
+  main {
+    height: 100vh;
+  }
+
+  .container {
+    position: fixed;
+    top: 0;
+    bottom: 10rem;
+    left: 1rem;
+    right: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .question {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .options-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    row-gap: 1rem;
+    column-gap: 1rem;
+  }
+
+  .options-container button {
+    background-color: var(--card-color);
+    height: 5rem;
+    border: none;
+    border-radius: 1rem;
+
+    font-size: 1.75rem;
+  }
+
+  .options-container button:hover {
+    background-color: var(--light-background-color);
+  }
+
+  .nav-button-container {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1rem;
+    right: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .remove {
+    display: none;
+  }
+</style>
