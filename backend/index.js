@@ -127,5 +127,68 @@ app.get("/get-rankings", async(req, res) => {
   res.json(data);
 });
 
+app.get("/get-user-rankings", getUserFromToken, async(req, res) => {
+  const userId = req.user.id;
+  let rankingToday;
+  let rankingWeekly;
+
+  const {data: xpTodayData, error: xpTodayError} = await supabase
+  .from("user_stats").select("user_id, xp_today").order("xp_today", {ascending: false});
+  if (xpTodayError) {
+    return res.status(500).json({xpTodayError: xpTodayError.message});
+  }
+
+  const {data: xpWeeklyData, error: xpWeeklyError} = await supabase
+  .from("user_stats").select("user_id, xp_weekly").order("xp_weekly", {ascending: false});
+  if (xpWeeklyError) {
+    return res.status(500).json({xpWeeklyError: xpWeeklyError.message});
+  }
+  
+  xpTodayData.forEach((userObj, index) => {
+    if (userObj.user_id == userId) {
+      rankingToday = index + 1;
+      return;
+    }
+  });
+
+  xpWeeklyData.forEach((userObj, index) => {
+    if (userObj.user_id == userId) {
+      rankingWeekly = index + 1;
+      return;
+    }
+  });
+  
+  res.json({rankingToday, rankingWeekly});
+});
+
+app.patch("/update-xp", getUserFromToken, async(req, res) => {
+  const userId = req.user.id;
+  const xpGained = req.query.xpGained;
+
+  const {data, error: fetchError} = await supabase
+  .from("user_stats").select("xp_today, xp_weekly, xp").eq("user_id", userId).single();
+
+  if (fetchError && fetchError.code !== "PGRST116") {
+    return res.status(500).json({error: fetchError.message});
+  }
+
+  const updatedXPToday = data.xp_today + xpGained;
+  const updatedXPWeekly = data.xp_weekly + xpGained;
+  const updatedXP = data.xp + xpGained;
+
+  const {error: updateError} = await supabase
+  .from("user_stats").update({xp_today: updatedXPToday, xp_weekly: updatedXPWeekly, xp: updatedXP}).eq("user_id", userId);
+
+  if (updateError) {
+    return res.status(500).json({error: updateError.message});
+  }
+
+  res.json({
+    xp_today: updatedXPToday,
+    xp_weekly: updatedXPWeekly,
+    xp: updatedXP
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

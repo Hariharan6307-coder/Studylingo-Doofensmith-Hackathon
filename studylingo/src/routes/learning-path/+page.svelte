@@ -23,8 +23,8 @@
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error);
       goto("/login");
+      alert(data.error);
     }
     else {
       topicsObjList = data;

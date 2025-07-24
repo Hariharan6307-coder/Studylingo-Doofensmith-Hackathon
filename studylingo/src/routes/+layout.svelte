@@ -4,7 +4,7 @@
   import TopBar from "$lib/components/TopBar.svelte";
 </script>
 
-{#if $page.url.pathname != "/"  && $page.url.pathname != "/learning-path" && $page.url.pathname != "/login" && $page.url.pathname != "/register" && $page.url.pathname != "/lessons" && $page.url.pathname != "/questions"}
+{#if $page.url.pathname == "/home" || $page.url.pathname == "/badges" || $page.url.pathname == "/practice" || $page.url.pathname == "/profile"  || $page.url.pathname == "/rankings"}
   <TopBar />
   <style>
     .page-content {
@@ -35,7 +35,7 @@
   <slot />
 </div>
 
-{#if $page.url.pathname != "/"  && $page.url.pathname != "/learning-path" && $page.url.pathname != "/login" && $page.url.pathname != "/register" && $page.url.pathname != "/lessons" && $page.url.pathname != "/questions"}
+{#if $page.url.pathname == "/home" || $page.url.pathname == "/badges" || $page.url.pathname == "/practice" || $page.url.pathname == "/profile"  || $page.url.pathname == "/rankings"}
   <NavBar currentPage = {$page.url.pathname}/>
 {/if}
 

@@ -45,7 +45,7 @@
     }}>Next</button>
     <button class="primary-button finish-button" class:remove={currentIndex !== lessonsObjList.length - 1} onclick={() => {
       goto(`/questions?topicId=${topicId}`);
-    }}>Finish</button>
+    }}>Practice Questions</button>
   </div>
 </main>
 

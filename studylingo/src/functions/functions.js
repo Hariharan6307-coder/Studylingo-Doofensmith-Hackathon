@@ -1,3 +1,5 @@
+import { goto } from "$app/navigation";
+
 export async function fetchData() {
   const token = localStorage.getItem("access_token");
 
@@ -13,8 +15,8 @@ export async function fetchData() {
   const data = await res.json();
 
   if (!res.ok) {
-    alert(data.error);
     goto("/login");
+    alert(data.error);
   }
   else {
     return data;

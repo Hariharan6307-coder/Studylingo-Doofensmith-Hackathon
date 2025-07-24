@@ -1,11 +1,15 @@
 <script>
   import { questions } from "../../data/lessons_questions";
   import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
+  import FinishedTopic from "$lib/components/FinishedTopic.svelte";
 
   let optionAButton, optionBButton, optionCButton, optionDButton;
   const rightAnswerColor = "#8cd900";
   const wrongAnswerColor = "#ff7d7d";
   const defaultAnswerColor = "#564B8F";
+  const xpAmountGain = 75;
+  const xpAmountLoss = 25;
 
   let topicId = $page.url.searchParams.get("topicId") || "unknown";
   const questionsObjList = questions[topicId];
@@ -16,36 +20,64 @@
   let questionObj = $derived(updatedQuestionsObjList[currentIndex]);
 
   let isOptionClicked = $state(false);
+  let isFinished = $state(false);
+
+  let xpGained = 0;
+  function changeXP(param) {
+    if (param === 1) {
+      xpGained += xpAmountGain;
+    }
+    else {
+      if (xpGained > xpAmountLoss) xpGained -= xpAmountLoss;
+      else xpGained = 0;
+    }
+  }
 
   function onOptionClick(button) {
     if (!isOptionClicked) {
       switch (button) {
         case optionAButton:
-          if (questionObj.options.a === questionObj.answer) optionAButton.style.backgroundColor = rightAnswerColor;
+          if (questionObj.options.a === questionObj.answer) {
+            optionAButton.style.backgroundColor = rightAnswerColor;
+            changeXP(1);
+          }
           else {
             optionAButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            changeXP(0);
           }
           break;
         case optionBButton:
-          if (questionObj.options.b === questionObj.answer) optionBButton.style.backgroundColor = rightAnswerColor;
+          if (questionObj.options.b === questionObj.answer) {
+            optionBButton.style.backgroundColor = rightAnswerColor;
+            changeXP(1);
+          }
           else {
             optionBButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            changeXP(0);
           }
           break;
         case optionCButton:
-          if (questionObj.options.c === questionObj.answer) optionCButton.style.backgroundColor = rightAnswerColor;
+          if (questionObj.options.c === questionObj.answer) {
+            optionCButton.style.backgroundColor = rightAnswerColor;
+            changeXP(1);
+          }
           else {
             optionCButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            changeXP(0);
           }
           break;
         case optionDButton:
-          if (questionObj.options.d === questionObj.answer) optionDButton.style.backgroundColor = rightAnswerColor;
+          if (questionObj.options.d === questionObj.answer) {
+            optionDButton.style.backgroundColor = rightAnswerColor;
+            changeXP(1);
+          }
           else {
             optionDButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            changeXP(0);
           }
           break;
       }
@@ -85,9 +117,15 @@
         optionCButton.style.backgroundColor = defaultAnswerColor;
         optionDButton.style.backgroundColor = defaultAnswerColor;
       }}>Next</button>
-      <button class="primary-button finish-button" class:remove={currentIndex !== updatedQuestionsObjList.length - 1}>Finish</button>
+      <button class="primary-button finish-button"
+       class:remove={currentIndex !== updatedQuestionsObjList.length - 1}
+       onclick={() => {isFinished = true}}
+       >Finish</button>
     {/if}
   </div>
+  {#if isFinished}
+    <FinishedTopic xpGained={xpGained}></FinishedTopic>
+  {/if}
 </main>
 
 <style>

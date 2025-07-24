@@ -15,17 +15,40 @@
     today: 2,
     weekly: 19
   };
+
+  let rank_today = $state(rank.today);
+  let rank_weekly = $state(rank.weekly);
+
   let isToday = $state(true);
   let selectedRank = $derived.by(() => {
-    if (isToday) return rank.today;
-    else return rank.weekly;
+    if (isToday) return rank_today;
+    else return rank_weekly;
   });
 
-  onMount(() => {
+  onMount(async () => {
     fetchData().then((data) => {
       username = data.user_name;
       streak = data.streak;
-    })
+    });
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      goto("/login");
+    }
+
+    const res = await fetch("http://localhost:3000/get-user-rankings", {
+      headers: {authorization: `Bearer ${token}`}
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      goto("/login");
+      alert(data.error);
+    }
+    else {
+      rank_today = data.rankingToday;
+      rank_weekly = data.rankingWeekly; 
+    }
   });
 
 
