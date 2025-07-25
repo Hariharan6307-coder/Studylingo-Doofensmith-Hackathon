@@ -2,10 +2,22 @@ import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
 import { createClient } from '@supabase/supabase-js'
+import { GoogleGenAI } from '@google/genai'
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const ai = new GoogleGenAI({});
+
+async function askAI(query) {
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: `${query}`
+  });
+
+  return response.text;
+}
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -172,9 +184,9 @@ app.patch("/update-xp", getUserFromToken, async(req, res) => {
     return res.status(500).json({error: fetchError.message});
   }
 
-  const updatedXPToday = data.xp_today + xpGained;
-  const updatedXPWeekly = data.xp_weekly + xpGained;
-  const updatedXP = data.xp + xpGained;
+  const updatedXPToday = Number(data.xp_today) + Number(xpGained);
+  const updatedXPWeekly = Number(data.xp_weekly) + Number(xpGained);
+  const updatedXP = Number(data.xp) + Number(xpGained);
 
   const {error: updateError} = await supabase
   .from("user_stats").update({xp_today: updatedXPToday, xp_weekly: updatedXPWeekly, xp: updatedXP}).eq("user_id", userId);
@@ -188,6 +200,17 @@ app.patch("/update-xp", getUserFromToken, async(req, res) => {
     xp_weekly: updatedXPWeekly,
     xp: updatedXP
   });
+});
+
+app.post("/ask-ai", async(req, res) => {
+  const query = req.body.query;
+
+  try {
+    const responseText = await askAI(query);
+    res.json({responseText});
+  } catch {
+    res.status(500).json({error: "Failed to get response from the AI"})
+  }
 });
 
 const PORT = process.env.PORT || 3000;
