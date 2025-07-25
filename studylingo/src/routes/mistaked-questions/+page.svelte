@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import Questions from "$lib/components/Questions.svelte";
   import { goto } from "$app/navigation";
-    import { StateMachineInput } from "@rive-app/canvas";
 
   let mistakedQuestionsObjList = JSON.parse(localStorage.getItem("mistakedQuestionsObjList"));
 </script>
