@@ -29,6 +29,9 @@
     fetchData().then((data) => {
       username = data.user_name;
       streak = data.streak;
+      if (!localStorage.getItem("mistakedQuestionsObjList")){
+        localStorage.setItem("mistakedQuestionsObjList", JSON.stringify([]));
+      }
     });
 
     const token = localStorage.getItem("access_token");

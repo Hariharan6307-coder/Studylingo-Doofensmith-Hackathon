@@ -2,7 +2,7 @@
   import FinishedTopic from "$lib/components/FinishedTopic.svelte";
   import { goto } from "$app/navigation";
 
-  let {questionsObjList} = $props();
+  let {questionsObjList, removeCorrectQuestions = false} = $props();
 
   let optionAButton, optionBButton, optionCButton, optionDButton;
   const rightAnswerColor = "#8cd900";
@@ -18,6 +18,20 @@
 
   let isOptionClicked = $state(false);
   let isFinished = $state(false);
+
+  function addToMistakeList(questionObj) {
+    let mistakedQuestionsObjList = JSON.parse(localStorage.getItem("mistakedQuestionsObjList"));
+    mistakedQuestionsObjList.push(questionObj);
+    localStorage.setItem("mistakedQuestionsObjList", JSON.stringify(mistakedQuestionsObjList));
+  }
+
+  function removeFromMistakeList(questionObj) {
+    if (removeCorrectQuestions) {
+      let mistakedQuestionsObjList = JSON.parse(localStorage.getItem("mistakedQuestionsObjList"));
+      mistakedQuestionsObjList = mistakedQuestionsObjList.filter(item => item.question !== questionObj.question);
+      localStorage.setItem("mistakedQuestionsObjList", JSON.stringify(mistakedQuestionsObjList));
+    }
+  }
 
   let xpGained = 0;
   function changeXP(param) {
@@ -36,44 +50,52 @@
         case optionAButton:
           if (questionObj.options.a === questionObj.answer) {
             optionAButton.style.backgroundColor = rightAnswerColor;
+            removeFromMistakeList(questionObj)
             changeXP(1);
           }
           else {
             optionAButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            addToMistakeList(questionObj);
             changeXP(0);
           }
           break;
         case optionBButton:
           if (questionObj.options.b === questionObj.answer) {
             optionBButton.style.backgroundColor = rightAnswerColor;
+            removeFromMistakeList(questionObj)
             changeXP(1);
           }
           else {
             optionBButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            addToMistakeList(questionObj);
             changeXP(0);
           }
           break;
         case optionCButton:
           if (questionObj.options.c === questionObj.answer) {
             optionCButton.style.backgroundColor = rightAnswerColor;
+            removeFromMistakeList(questionObj)
             changeXP(1);
           }
           else {
             optionCButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            addToMistakeList(questionObj);
             changeXP(0);
           }
           break;
         case optionDButton:
           if (questionObj.options.d === questionObj.answer) {
             optionDButton.style.backgroundColor = rightAnswerColor;
+            removeFromMistakeList(questionObj)
             changeXP(1);
           }
           else {
             optionDButton.style.backgroundColor = wrongAnswerColor;
             updatedQuestionsObjList.push(questionObj);
+            addToMistakeList(questionObj);
             changeXP(0);
           }
           break;

@@ -7,7 +7,10 @@
     <div class="fix-mistakes-card-contents">
       <div class="title">Learn From Your Mistakes</div>
       <div class="content">Revisit and Master the Questions you Struggled with</div>
-      <button class="primary-button">Fix Mistakes</button>
+      <button class="primary-button"
+      onclick={() => {
+        goto("/mistaked-questions")
+      }}>Fix Mistakes</button>
     </div>
     <img src="/images/other-icons/fix-mitakes-icon.png" alt="">
   </div>
