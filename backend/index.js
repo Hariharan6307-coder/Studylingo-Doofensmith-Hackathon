@@ -48,9 +48,7 @@ app.post('/register', async(req, res) => {
       xp_today: 0,
       xp_weekly: 0,
       gems: 0,
-      following: "[]",
-      followers: "[]",
-      badges: "[]",
+      badges: "[0, 0, 0]",
       current_topic_id: 101
     }]);
 
@@ -100,6 +98,13 @@ app.get("/fetch-data", getUserFromToken, async (req, res) => {
     return res.status(500).json({error: error.message});
   }
 
+  const badgesList = JSON.parse(data.badges);
+  let updatedGems = 0;
+  badgesList.forEach((value) => {
+    updatedGems += value * 10;
+  });
+  await supabase.from("user_stats").update({gems: updatedGems}).eq("user_id", userId);
+
   if (data.last_updated_xp) {
     const todayDate = new Date(today);
     const lastUpdatedDate = new Date(data.last_updated_xp);
@@ -122,7 +127,8 @@ app.get("/fetch-data", getUserFromToken, async (req, res) => {
     streak: data.streak,
     xp_today: data.xp_today,
     gems: data.gems,
-    current_topic_id: data.current_topic_id
+    current_topic_id: data.current_topic_id,
+    badges: data.badges
   });
 });
 
@@ -186,6 +192,10 @@ app.get("/get-user-rankings", getUserFromToken, async(req, res) => {
       return;
     }
   });
+
+  if (rankingWeekly === 1) {
+    updateBadge(userId, 1, 1);
+  }
   
   res.json({rankingToday, rankingWeekly});
 });
@@ -213,6 +223,7 @@ app.patch("/update-xp", getUserFromToken, async(req, res) => {
 
     const updatedStreak = streakData.streak + 1;
     await supabase.from("user_stats").update({streak: updatedStreak}).eq("user_id", userId);
+    updateBadge(userId, 2, 7);
   }
 
   const {error: updateError} = await supabase
@@ -238,6 +249,33 @@ app.post("/ask-ai", async(req, res) => {
   } catch {
     res.status(500).json({error: "Failed to get response from the AI"})
   }
+});
+
+async function updateBadge(userId, badgeIndex, target) {
+  const {data: fetchData, error: fetchError} = await supabase
+  .from("user_stats").select("badges").eq("user_id", userId).single();
+  if (fetchError && fetchError.code !== "PGRST116") {
+    return res.status(500).json({error: fetchError.message});
+  }
+
+  let badgeList = JSON.parse(fetchData.badges);
+
+  if (badgeList[badgeIndex] < target) {
+    badgeList[badgeIndex] = badgeList[badgeIndex] + 1;
+    const {error: updatedError} = await supabase
+    .from("user_stats").update({badges: JSON.stringify(badgeList)}).eq("user_id", userId);
+    if (updatedError) {
+      return res.status(500).json({error: updatedError.message});
+    }
+  }
+}
+
+app.patch("/update-badges", getUserFromToken, async(req, res) => {
+  const userId = req.user.id;
+  const {badgeIndex, target} = req.body;
+
+  updateBadge(userId, badgeIndex, target);
+
 });
 
 const PORT = process.env.PORT || 3000;

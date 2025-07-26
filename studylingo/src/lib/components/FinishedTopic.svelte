@@ -1,8 +1,13 @@
 <script>
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
+  import { updateBadge } from "../../functions/functions";
 
-  let { xpGained } = $props();
+  let { xpGained, noOfQuestions } = $props();
+
+  if (xpGained === noOfQuestions * 75) {
+    updateBadge(0,  1);
+  }
 
   onMount(updateXP);
 

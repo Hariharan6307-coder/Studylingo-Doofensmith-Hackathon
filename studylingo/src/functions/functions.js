@@ -22,3 +22,25 @@ export async function fetchData() {
     return data;
   }
 }
+
+export async function updateBadge(badgeIndex, target) {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    goto("/login");
+    return;
+  }
+
+  const res = await fetch("http://localhost:3000/update-badges", {
+    method: "PATCH",
+    headers: {authorization: `Bearer ${token}`, "Content-Type": "application/json"},
+    body: JSON.stringify({badgeIndex, target})
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error);
+    goto("/login");
+  }
+}

@@ -1,5 +1,15 @@
 <script>
-    import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
+  import { fetchData } from "../../functions/functions";
+
+  let gems = $state(0);
+  onMount(() => {
+    fetchData().then((data) => {
+    gems = data.gems;
+  });
+  })
+  
 
 </script>
 <main>
@@ -18,7 +28,10 @@
     <div class="title">Boost Your Learning</div>
     <div class="content">Extra problems, extra rewards! Boost your XP, climb the ranks, and master your skills.</div>
     <button class="extra-questions-button"
-    onclick={() => {goto("/ai-questions")}}>
+    onclick={() => {
+        if (gems > 10) goto("/ai-questions");
+        else alert("Need more gems buddy");
+      }}>
       <img src="/images/course-icons/physics-icon.png" alt="">
       <div class="text">Electric Current</div>
       <div class="gems-required-card">

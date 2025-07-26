@@ -10,6 +10,7 @@
   const defaultAnswerColor = "#564B8F";
   const xpAmountGain = 75;
   const xpAmountLoss = 25;
+  const noOfQuestions = questionsObjList.length;
 
   let updatedQuestionsObjList = $state(questionsObjList);
 
@@ -142,7 +143,7 @@
     {/if}
   </div>
   {#if isFinished}
-    <FinishedTopic xpGained={xpGained}></FinishedTopic>
+    <FinishedTopic xpGained={xpGained} noOfQuestions={noOfQuestions}></FinishedTopic>
   {/if}
 </main>
 
