@@ -104,6 +104,10 @@ app.get("/fetch-data", getUserFromToken, async (req, res) => {
     const todayDate = new Date(today);
     const lastUpdatedDate = new Date(data.last_updated_xp);
     const daysBetween = (todayDate - lastUpdatedDate) / (1000 * 60 * 60 * 24);
+
+    if (daysBetween > 1) {
+      await supabase.from("user_stats").update({streak: 0}).eq("user_id", userId);
+    }
     
     if (daysBetween > 0) {
       await supabase.from("user_stats").update({xp_today: 0}).eq("user_id", userId);
@@ -192,7 +196,7 @@ app.patch("/update-xp", getUserFromToken, async(req, res) => {
   const today = new Date().toISOString().split('T')[0];
 
   const {data, error: fetchError} = await supabase
-  .from("user_stats").select("xp_today, xp_weekly, xp").eq("user_id", userId).single();
+  .from("user_stats").select("xp_today, xp_weekly, xp, last_updated_xp").eq("user_id", userId).single();
 
   if (fetchError && fetchError.code !== "PGRST116") {
     return res.status(500).json({error: fetchError.message});
@@ -201,6 +205,15 @@ app.patch("/update-xp", getUserFromToken, async(req, res) => {
   const updatedXPToday = Number(data.xp_today) + Number(xpGained);
   const updatedXPWeekly = Number(data.xp_weekly) + Number(xpGained);
   const updatedXP = Number(data.xp) + Number(xpGained);
+  const lastUpdatedXP = data.last_updated_xp;
+
+  if (!lastUpdatedXP || (today > lastUpdatedXP)) {
+    const {data: streakData} = await supabase
+    .from("user_stats").select("streak").eq("user_id", userId).single();
+
+    const updatedStreak = streakData.streak + 1;
+    await supabase.from("user_stats").update({streak: updatedStreak}).eq("user_id", userId);
+  }
 
   const {error: updateError} = await supabase
   .from("user_stats").update({xp_today: updatedXPToday, xp_weekly: updatedXPWeekly, xp: updatedXP, last_updated_xp: today}).eq("user_id", userId);
