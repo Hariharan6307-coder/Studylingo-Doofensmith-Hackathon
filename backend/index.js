@@ -91,12 +91,25 @@ async function getUserFromToken(req, res, next) {
 
 app.get("/fetch-data", getUserFromToken, async (req, res) => {
   const userId = req.user.id;
+  const today = new Date().toISOString().split('T')[0];
 
   const {data, error} = await supabase
   .from("user_stats").select("*").eq("user_id", userId).single();
 
   if (error && error.code !== "PGRST116") {
     return res.status(500).json({error: error.message});
+  }
+
+  if (data.last_updated_xp) {
+    const todayDate = new Date(today);
+    const lastUpdatedDate = new Date(data.last_updated_xp);
+    const daysBetween = (todayDate - lastUpdatedDate) / (1000 * 60 * 60 * 24);
+    
+    if (daysBetween > 0) {
+      await supabase.from("user_stats").update({xp_today: 0}).eq("user_id", userId);
+    } else if (daysBetween > 6) {
+      await supabase.from("user_stats").update({xp_weekly: 0}).eq("user_id", userId);
+    }
   }
 
   res.json({
@@ -176,6 +189,7 @@ app.get("/get-user-rankings", getUserFromToken, async(req, res) => {
 app.patch("/update-xp", getUserFromToken, async(req, res) => {
   const userId = req.user.id;
   const xpGained = req.query.xpGained;
+  const today = new Date().toISOString().split('T')[0];
 
   const {data, error: fetchError} = await supabase
   .from("user_stats").select("xp_today, xp_weekly, xp").eq("user_id", userId).single();
@@ -189,7 +203,7 @@ app.patch("/update-xp", getUserFromToken, async(req, res) => {
   const updatedXP = Number(data.xp) + Number(xpGained);
 
   const {error: updateError} = await supabase
-  .from("user_stats").update({xp_today: updatedXPToday, xp_weekly: updatedXPWeekly, xp: updatedXP}).eq("user_id", userId);
+  .from("user_stats").update({xp_today: updatedXPToday, xp_weekly: updatedXPWeekly, xp: updatedXP, last_updated_xp: today}).eq("user_id", userId);
 
   if (updateError) {
     return res.status(500).json({error: updateError.message});
