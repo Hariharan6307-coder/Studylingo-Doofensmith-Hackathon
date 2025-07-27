@@ -10,7 +10,7 @@
   let streakData = {
     streakCase: 1 // 0 - Streak is off, 1 - Streak is on, -1 - Streak is broken
   }
-  let progress = 42;
+  let progress = $state(42);
   let rank = {
     today: 2,
     weekly: 19
@@ -29,6 +29,7 @@
     fetchData().then((data) => {
       username = data.user_name;
       streak = data.streak;
+      progress = ((data.current_topic_id % 100) / 5) * 100;
       if (!localStorage.getItem("mistakedQuestionsObjList")){
         localStorage.setItem("mistakedQuestionsObjList", JSON.stringify([]));
       }
