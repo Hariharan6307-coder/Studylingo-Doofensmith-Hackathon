@@ -299,7 +299,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      background-color: var(--card-color);
+      background-color: #6e5fb7;
       border-radius: 2rem;
     }
 
