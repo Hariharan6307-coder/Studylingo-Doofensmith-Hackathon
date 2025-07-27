@@ -123,7 +123,7 @@
       </div>
       <div class="streak-card-data desktop-view">
         <div class="streak-number-title">{streak} Days Streak</div>
-        <div class="streak-message">This will be good message motivating the user to keep the streak going</div>
+        <div class="streak-message">Keep the streaking going!!</div>
       </div>
     </div>
   </div>

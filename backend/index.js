@@ -128,7 +128,8 @@ app.get("/fetch-data", getUserFromToken, async (req, res) => {
     xp_today: data.xp_today,
     gems: data.gems,
     current_topic_id: data.current_topic_id,
-    badges: data.badges
+    badges: data.badges,
+    xp: data.xp
   });
 });
 

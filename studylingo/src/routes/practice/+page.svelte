@@ -54,6 +54,7 @@
   .text {
     flex: 1;
     font-size: 1.5rem;
+    font-weight: 700;
   }
 
   .gems-required-card {
@@ -78,6 +79,7 @@
 
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
 
   .extra-questions-button {
@@ -88,6 +90,7 @@
     border-color: whitesmoke;
     border-width: 1px;
     border-radius: 2rem;
+    max-width: 30rem;
 
     display: flex;
     align-items: center;
@@ -138,5 +141,19 @@
 
   .fix-mistakes-card-contents .content {
     flex: 1
+  }
+
+  @media screen and (min-width: 500px) {
+    .title {
+      font-size: 2.25rem;
+    }
+
+    .content {
+      font-size: 1.5rem;
+    }
+
+    .text {
+      font-size: 2rem;
+    }
   }
 </style>
