@@ -201,6 +201,24 @@ app.get("/get-user-rankings", getUserFromToken, async(req, res) => {
   res.json({rankingToday, rankingWeekly});
 });
 
+app.patch("/update-current-topic", getUserFromToken, async(req, res) => {
+  const userId = req.user.id;
+  const finishedTopicId = req.query.finishedTopicId;
+
+  const {data: fetchData, error: fetchError} = await supabase
+  .from("user_stats").select("current_topic_id").eq("user_id", userId).single();
+
+  if (fetchError) return res.status(500).json({error: fetchError.message});
+
+  if (finishedTopicId == fetchData.current_topic_id) {
+    const updatedCurrentTopicId = Number(fetchData.current_topic_id) + 1;
+    const {error: updateError} = await supabase
+    .from("user_stats").update({current_topic_id: updatedCurrentTopicId}).eq("user_id", userId);
+
+    if (updateError) return res.status(500).json({error: fetchError.message});
+  }
+});
+
 app.patch("/update-xp", getUserFromToken, async(req, res) => {
   const userId = req.user.id;
   const xpGained = req.query.xpGained;

@@ -30,23 +30,28 @@
 </script>
 
 <main>
-  <canvas bind:this={canvas}></canvas>
-  <div class="explanation-text">{lessonsObjList[currentIndex].text}</div>
-  <div class="button-container">
-    <button class="primary-button back-button" class:disable={currentIndex === 0} onclick={() => {
-      if (currentIndex > 0) {
-        currentIndex -= 1;
-      }
-    }}>Back</button>
-    <button class="primary-button next-button" class:remove={currentIndex === lessonsObjList.length - 1} onclick={() => {
-      if (currentIndex < lessonsObjList.length - 1) {
-        currentIndex += 1;
-      }
-    }}>Next</button>
-    <button class="primary-button finish-button" class:remove={currentIndex !== lessonsObjList.length - 1} onclick={() => {
-      goto(`/questions?topicId=${topicId}`);
-    }}>Practice Questions</button>
-  </div>
+  {#if lessonsObjList}
+    <canvas bind:this={canvas}></canvas>
+    <div class="explanation-text">{lessonsObjList[currentIndex].text}</div>
+    <div class="button-container">
+      <button class="primary-button back-button" class:disable={currentIndex === 0} onclick={() => {
+        if (currentIndex > 0) {
+          currentIndex -= 1;
+        }
+      }}>Back</button>
+      <button class="primary-button next-button" class:remove={currentIndex === lessonsObjList.length - 1} onclick={() => {
+        if (currentIndex < lessonsObjList.length - 1) {
+          currentIndex += 1;
+        }
+      }}>Next</button>
+      <button class="primary-button finish-button" class:remove={currentIndex !== lessonsObjList.length - 1} onclick={() => {
+        goto(`/questions?topicId=${topicId}`);
+      }}>Practice Questions</button>
+    </div>
+  {:else}
+    <h1>This topic hasn't been updated yet</h1>
+  {/if}
+  
 </main>
 
 <style>
